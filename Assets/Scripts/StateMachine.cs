@@ -45,6 +45,10 @@ public class StateMachine : MonoBehaviour
         while (_state == State.Patrol)
         {
             _aiAgent.Patrol();
+            if (_aiAgent.IsPlayerInRange())
+            {
+                _state = State.Chase;
+            }
             yield return null;
         }
         Debug.Log("Patrol: Exit");
@@ -56,11 +60,14 @@ public class StateMachine : MonoBehaviour
         while (_state == State.Chase)
         {
             _aiAgent.ChasePlayer();
+            if (!_aiAgent.IsPlayerInRange())
+            {
+                _state = State.Patrol;
+            }
             yield return null;
         }
         Debug.Log("Chase: Exit");
     }
-
 
     private void Update()
     {

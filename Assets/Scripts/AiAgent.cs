@@ -17,6 +17,18 @@ public class AiAgent : MonoBehaviour
 
     private float minDis = 0.025f;
 
+    public bool IsPlayerInRange()
+    {
+        if (Vector2.Distance(transform.position, _player.transform.position) < chaseDistance)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     public void Patrol()
     {
         Vector2 waypointPosition = _waypoints[_waypointIndex].position;
