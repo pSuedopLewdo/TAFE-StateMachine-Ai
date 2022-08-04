@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class AiAgent : MonoBehaviour
 {
@@ -10,26 +9,44 @@ public class AiAgent : MonoBehaviour
     //private mean no one can access the variable
     //public means everyone can access the variable
 
-    [SerializeField] private GameObject player;
-    public float speed = 5;
-    
-    private float minDis = 0.025f;
-    private float killDis = 0.9f;
+    [SerializeField] private GameObject _player;
+    [SerializeField] private Transform[] _waypoints;
+    [SerializeField] private float _speed = 5;
+    [SerializeField] private int _waypointIndex = 0;
+    public float chaseDistance = 5;
 
-    void Update()
+    private float minDis = 0.025f;
+
+    public void Patrol()
     {
-        Vector2 dirToPlayer = player.transform.position - transform.position;
+        Vector2 waypointPosition = _waypoints[_waypointIndex].position;
+
+        MoveToPoint(_waypoints[_waypointIndex].position);
+
+        if (Vector2.Distance(transform.position, waypointPosition) < 0.1f)
+        {
+            if (_waypointIndex >= _waypoints.Length)
+            {
+             _waypointIndex = 0;
+            }
+            _waypointIndex++;
+        }        
+    }
+
+    public void ChasePlayer()
+    {
+        MoveToPoint(_player.transform.position);
+    }
+
+    public void MoveToPoint(Vector2 point)
+    {
+        Vector2 dirToPlayer = _player.transform.position - transform.position;
 
         if (dirToPlayer.magnitude > minDis)
         {
             dirToPlayer.Normalize();
-            dirToPlayer *= speed * Time.deltaTime;
+            dirToPlayer *= _speed * Time.deltaTime;
             transform.position += (Vector3) dirToPlayer;
         }
-
-        if (dirToPlayer.magnitude < killDis)
-        {
-            SceneManager.LoadScene(0);
-        }
-    }
+    }  
 }
