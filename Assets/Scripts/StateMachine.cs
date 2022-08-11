@@ -2,17 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(AiAgent))]
 public class StateMachine : MonoBehaviour
 {
-    public enum State
+    private enum State
     {
         Patrol,
-        Aware,
         Chase,
         Flee,
         Sleep,
     }
-
+    
     [SerializeField] private State _state;
     private AiAgent _aiAgent;
 
@@ -20,7 +20,7 @@ public class StateMachine : MonoBehaviour
     private void Start()
     {
         _aiAgent = GetComponent<AiAgent>();
-
+        
         NextState();
     }
 
@@ -41,8 +41,8 @@ public class StateMachine : MonoBehaviour
 
     private IEnumerator PatrolState()
     {
-        Debug.Log("Patrol: Enter");
-        while (_state == State.Patrol)
+        _aiAgent.Search();
+        while(_state == State.Patrol)
         {
             _aiAgent.Patrol();
             if (_aiAgent.IsPlayerInRange())
@@ -51,7 +51,6 @@ public class StateMachine : MonoBehaviour
             }
             yield return null;
         }
-        Debug.Log("Patrol: Exit");
         NextState();
     }
     private IEnumerator ChaseState()
@@ -67,6 +66,7 @@ public class StateMachine : MonoBehaviour
             yield return null;
         }
         Debug.Log("Chase: Exit");
+        NextState();
     }
 
     private void Update()
