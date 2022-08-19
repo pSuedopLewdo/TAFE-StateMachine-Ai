@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class AiSplit : MonoBehaviour
 {
-    [SerializeField] private float shrinkPercent = 0.5f;
+    public bool beenHit = false;
+    [SerializeField] private float shrinkPercent = 0.95f;
     [SerializeField] private float smallestSize = 0.25f;
     public Bullet splitByBullet = null;
     private void OnTriggerEnter2D(Collider2D collision)
@@ -16,16 +17,15 @@ public class AiSplit : MonoBehaviour
         //if it is a bullet or if it is not nothing
         if (bullet != null)
         {
-            if (bullet == splitByBullet) return;
-            
-            transform.localScale *= shrinkPercent;
-            if (transform.localScale.x < smallestSize)
+            if (bullet == splitByBullet)
             {
-                Destroy(gameObject);
+                //beenHit = true;
                 return;
             }
-            splitByBullet = bullet;
-            Instantiate(gameObject);
+
+            beenHit = true;
+            transform.localScale *= shrinkPercent;
+            Destroy(bullet.gameObject);
         }
     }
 }

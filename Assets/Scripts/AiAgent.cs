@@ -44,6 +44,17 @@ public class AiAgent : MonoBehaviour
         }       
     }
 
+    public void HomeState()
+    {
+        //after the ai flees to the home sleeps for 5 seconds before going on patrol again
+    }
+    
+
+    public void FleeState()
+    {
+        //when the player hits an ai they run towards home
+    }
+
     public void ChasePlayer()
     {
         
