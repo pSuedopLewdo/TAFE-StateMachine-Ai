@@ -5,12 +5,12 @@ using UnityEngine;
 public class Toggle : MonoBehaviour
 {
     public GameObject toggleGameObject;
-    
+
     public void ToggleButton()
     {
         if (toggleGameObject != null)
         {
-            bool isActive = toggleGameObject.activeSelf;
+            var isActive = toggleGameObject.activeSelf;
             toggleGameObject.SetActive(!isActive);
         }
     }

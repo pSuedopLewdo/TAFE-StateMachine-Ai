@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class AiAgent : MonoBehaviour
 {
@@ -14,56 +15,53 @@ public class AiAgent : MonoBehaviour
     [SerializeField] private float _speed = 5;
     [SerializeField] private int _waypointIndex = 0;
 
+    public PlanetAi planetAi;
+    public Vector2 homePoint;
+
     private float minDis = 0.025f;
-    private float chaseDis = 3f;
+    private float chaseDis = 5f;
+    private float fightDis = 2f;
 
     public bool IsPlayerInRange()
     {
         if (Vector2.Distance(transform.position, _player.transform.position) < chaseDis)
-        {
             return true;
-        }
         else
-        {
             return false;
-        }
     }
 
     public void Patrol()
     {
         Vector2 waypointPosition = _waypoints[_waypointIndex].position;
         MoveToPoint(waypointPosition);
-        if(Vector2.Distance(transform.position, waypointPosition) < minDis )
-        {
+        if (Vector2.Distance(transform.position, waypointPosition) < minDis)
             //_waypointIndex = (_waypointIndex+1) % _waypoints.Length;
             _waypointIndex++;
-        }
-        if(_waypointIndex >= _waypoints.Length)
-        {
-            _waypointIndex = 0;
-        }       
+        if (_waypointIndex >= _waypoints.Length) _waypointIndex = 0;
     }
 
     public void HomeState()
     {
         //after the ai flees to the home sleeps for 5 seconds before going on patrol again
     }
-    
+
 
     public void FleeState()
     {
+        MoveToPoint(homePoint);
+        if (Vector2.Distance(transform.position, homePoint) < 1) HomeState();
         //when the player hits an ai they run towards home
     }
 
     public void ChasePlayer()
     {
-        
         MoveToPoint(_player.transform.position);
+        if (Vector2.Distance(transform.position, _player.transform.position) < fightDis) FightState();
     }
 
     public void MoveToPoint(Vector2 point)
     {
-        Vector2 dirToPlayer = point - (Vector2)transform.position;
+        var dirToPlayer = point - (Vector2) transform.position;
 
         if (dirToPlayer.magnitude > minDis)
         {
@@ -73,24 +71,29 @@ public class AiAgent : MonoBehaviour
         }
     }
 
+    public void FightState()
+    {
+        SceneManager.LoadScene(2);
+    }
+
     public void Search()
     {
         //stores closest waypoint
         //-1 common way to have a null in an index
-        int closestIndex = -1;
-        float closestDistance = float.MaxValue;
-        
+        var closestIndex = -1;
+        var closestDistance = float.MaxValue;
+
         //loop for everyway point
-        for (int index = 0; index < _waypoints.Length; index++)
-        { 
-            float currentDistance = Vector2.Distance(_waypoints[index].position, transform.position);
+        for (var index = 0; index < _waypoints.Length; index++)
+        {
+            var currentDistance = Vector2.Distance(_waypoints[index].position, transform.position);
             if (currentDistance < closestDistance)
             {
                 closestDistance = currentDistance;
                 closestIndex = index;
             }
         }
-        
+
         _waypointIndex = closestIndex;
 
         //if distance to x < prev closest waypoint
@@ -107,6 +110,9 @@ public class AiAgent : MonoBehaviour
             index++;
         }
         */
+    }
 
+    private void Update()
+    {
     }
 }

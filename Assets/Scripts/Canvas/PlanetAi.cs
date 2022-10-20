@@ -10,19 +10,20 @@ public class PlanetAi : MonoBehaviour
     public int planetHealth;
     public int maxPlanetHealth = 100;
     public int minPlanetHealth = 0;
-    
-    [Header("Ui Components")]
-    public Text planetHealthText;
+
+    [Header("Ui Components")] public Text planetHealthText;
     public Slider healthBar;
     public Image planetBar;
 
+    public bool isPlayersTurn = true;
+
     public PartyBehaviour partyBehaviour;
-    
 
 
     private void Start()
     {
         UpdateUI();
+        isPlayersTurn = true;
     }
 
     public void Damage(int damageAmount)
@@ -32,41 +33,55 @@ public class PlanetAi : MonoBehaviour
             partyBehaviour.partyHealth = 0;
             partyBehaviour.IsDead();
         }
-        planetHealth -= damageAmount;
+
+        partyBehaviour.partyHealth -= damageAmount;
         Debug.Log(planetHealth);
         UpdateUI();
     }
 
     public void Heal(int healAmount)
     {
-        if (planetHealth + healAmount > maxPlanetHealth)
-        {
-            planetHealth = maxPlanetHealth;
-        }
-        Damage(-healAmount);
+        if (planetHealth + healAmount > maxPlanetHealth) planetHealth = maxPlanetHealth;
+        planetHealth += healAmount;
         UpdateUI();
     }
 
     public void UpdateUI()
     {
-        planetHealthText.text = $"{planetHealth} :Health";
+        planetHealthText.text = planetHealth + " :Health";
         healthBar.value = planetHealth;
 
-        planetBar.color = Color.Lerp(Color.red, Color.green, (float)planetHealth/ maxPlanetHealth);
+        planetBar.color = Color.Lerp(Color.red, Color.green, (float) planetHealth / maxPlanetHealth);
         if (planetHealth <= 0)
-        {
             planetBar.gameObject.SetActive(false);
-        }
         else
-        {
             planetBar.gameObject.SetActive(true);
-        }
-        
     }
 
-    public void Poison()
+    public void EnemyAttack()
     {
-        //damage over time/turns
+         if (planetHealth >= 50)
+         {
+             Damage(8); 
+             isPlayersTurn = true;
+         } 
+         if (planetHealth <= 50 && planetHealth != 40) 
+         {
+             Heal(5); 
+             isPlayersTurn = true; 
+         }
+         if (planetHealth == 40)
+         {
+            Damage(5); 
+         }
+    }
+
+    public void Update()
+    {
+        if (isPlayersTurn == false)
+        {
+           EnemyAttack();
+        }
     }
 
     public void Flee()

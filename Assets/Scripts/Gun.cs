@@ -14,16 +14,15 @@ public class Gun : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-            Vector3 clickPos = _camera.ScreenToWorldPoint(Input.mousePosition);
+            var clickPos = _camera.ScreenToWorldPoint(Input.mousePosition);
             Vector2 clickDir = clickPos - transform.position;
-            
+
             //spawn a projetile in that click diretion
             Instantiate(bulletPrefab, transform.position, Quaternion.FromToRotation(Vector2.up, clickDir));
-            
         }
     }
 }
